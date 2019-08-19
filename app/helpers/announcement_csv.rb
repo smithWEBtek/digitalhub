@@ -3,19 +3,25 @@ module AnnouncementCsv
 
   def self.import_csv_data
     csv_text = File.read(Rails.root.join('lib', 'import', 'announcement.csv'))
-    csv_text = File.read(Rails.root.join('vendor', 'extensions', 'announcements', 'lib', 'import', 'announcement_seed.csv'))
     csv = CSV.parse(csv_text, headers: true, encoding: 'ISO-8859-1')
+
+
+    images = Dir[Rails.root.join('app', 'assets', 'images', '*')].each do |file|
+      if file
+        file_path = Rails.root.join(File.path(file))
+        image = ::Refinery::Image.first_or_create(image: file_path)
+      end
+    end
 
     csv.each do |row|
       tag1_id = ::Refinery::Tags::Tag.find_by(title: row['tag1']).id
       tag2_id = ::Refinery::Tags::Tag.find_by(title: row['tag2']).id
 
-      file_path = Rails.root.join(Rails.root.join('vendor', 'extensions', 'announcements', 'lib', 'import', row['image_file_name']))
-      image = ::Refinery::Image.create(image: file_path)
       new_announcement = ::Refinery::Announcements::Announcement.first_or_create(title: row[0],
         body: row['body'],
         link: row['link'],
-        image_id: image.id,
+        # image_id: rand(Refinery::Image.last.id),
+        image_id: 3,
         published_date: row['published_date']
       )
 
