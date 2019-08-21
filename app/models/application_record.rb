@@ -13,8 +13,8 @@ class ApplicationRecord < ActiveRecord::Base
 
   def self.import_csv_data
     AnnouncementCsv.import_csv_data
-    # EventCsv.import_csv_data
-    # ReportCsv.import_csv_data
+    EventCsv.import_csv_data
+    ReportCsv.import_csv_data
   end
 
   def self.remove_csv_data
