@@ -57,7 +57,7 @@
     }
     @include media(x-small) { font-size: $v3_font_size-h1-mobile; }
     color: $v3_color_bg-lightest;
-    display: inline-block;
+    display: block;
     font-family: $font_family-primary;
     font-size: $v3_font_size-h1;
 

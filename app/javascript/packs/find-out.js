@@ -16,12 +16,12 @@ function loadDropdowns() {
     const contentTypes = response.filter(tag => tag.data.attributes.tag_type === 'content_type')
     const contentTypeSelectOptions = contentTypes.slice(0, 3).map(tag => `<option data-id=${tag.data.attributes.id} value=${tag.data.attributes.title} class="find-out__tag-title">${tag.data.attributes.title}</option>`).join('')
     const contentTypeDropdown = (`<select class="content-type__select content-type__dropdown"><option id='all-content-types' value='everything' selected>everything</option>${contentTypeSelectOptions}</select>`)
-    document.getElementsByClassName('content-type')[0].innerHTML = "You're looking for " + contentTypeDropdown
+    document.getElementsByClassName('content-type')[0].innerHTML = `You're looking for ${contentTypeDropdown}`
 
     const topicAreas = response.filter(tag => tag.data.attributes.tag_type === 'topic_area')
     const topicAreaSelectOptions = topicAreas.map(tag => `<option data-id=${tag.data.attributes.id} value=${tag.data.attributes.title} class="find-out__tag-title">${tag.data.attributes.title}</option>`).join('')
     const topicAreaDropdown = (`<select class="topic-area__select topic-area__dropdown"><option id='all-topic-areas' value='all topic areas' selected>all topic areas</option>${topicAreaSelectOptions}</select>`)
-    document.getElementsByClassName('topic-area')[0].innerHTML = "in " + topicAreaDropdown
+    document.getElementsByClassName('topic-area')[0].innerHTML = `in ${topicAreaDropdown}`
     onDropdownChange()
     cueOverlay()
   })
@@ -83,7 +83,6 @@ const fetchTaggings = (dropdownsObject) => {
     dataType: 'json',
     data: dropdownsObject,
   }).done(response => {
-    console.log(response.taggings)
     const resultsDiv = $('.results')
     const headerShort = () => {
       $('.find-out__header').removeClass('find-out__header--with-topic')
@@ -107,6 +106,24 @@ const fetchTaggings = (dropdownsObject) => {
       resultsDiv.removeClass('results--cards-high')
     }
 
+    const fixedFooter = () => {
+      $('.results').css({
+        bottom: 0,
+        'margin-bottom': 0
+      })
+      $('.footer').css({
+        position: 'fixed',
+        bottom: 0
+      })
+    }
+
+    const floatingFooter = () => {
+      $('.footer').css({
+        position: '',
+        bottom: ''
+      })
+    }
+
     const resetDisplay = () => {
       $('.narrative-text').empty()
       resultsDiv.empty()
@@ -116,19 +133,25 @@ const fetchTaggings = (dropdownsObject) => {
     resetDisplay()
     loadTopicAreaNarrative(dropdownsObject.topic_area, response.topic_area_narrative)
 
-    if (dropdownsObject.content_type !== 'events') {
+    if (response.taggings.length === 0) {
       cardsLow()
       headerShort()
-    }
-    else if (dropdownsObject.content_type === 'events' && response.taggings.length > 0) {
+      fixedFooter()
+    } else if (dropdownsObject.content_type !== 'events' && dropdownsObject.topic_area !== 'all topic areas') {
+      cardsHigh()
+      headerTall()
+      floatingFooter()
+    } else if (dropdownsObject.content_type === 'events' && response.taggings.length > 0) {
       headerTall()
       nextThreeEvents()
       cardsHigh()
-    }
-    else if (response.taggings.length === 0) {
+      floatingFooter()
+    } else {
       cardsLow()
       headerShort()
+      floatingFooter()
     }
+
     loadInitialCards(response.taggings, resultsDiv, dropdownsObject)
     onClickOverlay()
   })
@@ -156,30 +179,25 @@ const loadInitialCards = (taggings, resultsDiv, dropdownsObject) => {
   if (taggings.length === 0) {
     $('.results').html('<div class="message--none">There are currently no results for the selected filters.</div>')
     hideLoadMoreButton()
-  } else {
-    if (dropdownsObject.content_type === 'events'){
-      createCards(taggings.slice(0,8), resultsDiv)
-      if (taggings.length > 8){
-        showLoadMoreButton(taggings.slice(8, taggings.length - 1), resultsDiv)
-      }
-      else {
-        hideLoadMoreButton()
-      }
+  } else if (dropdownsObject.content_type === 'events') {
+    createCards(taggings.slice(0, 8), resultsDiv)
+    if (taggings.length > 8) {
+      showLoadMoreButton(taggings.slice(8, taggings.length), resultsDiv)
+    } else {
+      hideLoadMoreButton()
     }
-    else{
-      createCards(taggings.slice(0, 9), resultsDiv)
-      if (taggings.length > 9) {
-        showLoadMoreButton(taggings.slice(9, taggings.length - 1), resultsDiv)
-      } else {
-        hideLoadMoreButton()
-      }
+  } else {
+    createCards(taggings.slice(0, 9), resultsDiv)
+    if (taggings.length > 9) {
+      showLoadMoreButton(taggings.slice(9, taggings.length), resultsDiv)
+    } else {
+      hideLoadMoreButton()
     }
   }
 }
 
 const loadNextThreeEvents = (events, resultsDiv) => {
   const nextThree = events.map(event => {
-    console.log(event)
     return new Event(event)
   })
   const nextThreeEventsHtml = Event.nextThree(nextThree)
