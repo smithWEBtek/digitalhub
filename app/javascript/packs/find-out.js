@@ -134,19 +134,28 @@ const fetchTaggings = (dropdownsObject) => {
     loadTopicAreaNarrative(dropdownsObject.topic_area, response.topic_area_narrative)
 
     if (response.taggings.length === 0) {
+      console.log('no taggings');
       cardsLow()
       headerShort()
       fixedFooter()
+    } else if (dropdownsObject.topic_area !== 'all topic areas') {
+      console.log('topic_area selected');
+      cardsHigh()
+      headerTall()
+      floatingFooter()
     } else if (dropdownsObject.content_type !== 'events' && dropdownsObject.topic_area !== 'all topic areas') {
+      console.log('not events, not all topic areas');
       cardsHigh()
       headerTall()
       floatingFooter()
     } else if (dropdownsObject.content_type === 'events' && response.taggings.length > 0) {
+      console.log('content_type: events, taggings.length > 0');
+      cardsHigh()
       headerTall()
       nextThreeEvents()
-      cardsHigh()
       floatingFooter()
     } else {
+      console.log('else end')
       cardsLow()
       headerShort()
       floatingFooter()
@@ -182,14 +191,14 @@ const loadInitialCards = (taggings, resultsDiv, dropdownsObject) => {
   } else if (dropdownsObject.content_type === 'events') {
     createCards(taggings.slice(0, 8), resultsDiv)
     if (taggings.length > 8) {
-      showLoadMoreButton(taggings.slice(8, taggings.length), resultsDiv)
+      showLoadMoreButton(taggings.slice(8, taggings.length - 1), resultsDiv)
     } else {
       hideLoadMoreButton()
     }
   } else {
     createCards(taggings.slice(0, 9), resultsDiv)
     if (taggings.length > 9) {
-      showLoadMoreButton(taggings.slice(9, taggings.length), resultsDiv)
+      showLoadMoreButton(taggings.slice(9, taggings.length - 1), resultsDiv)
     } else {
       hideLoadMoreButton()
     }
@@ -237,6 +246,14 @@ class Report {
 }
 
 Report.prototype.reportCardHtml = function reportCardHtml() {
+  const tags = this.tags.map(tag => {
+    if (tag.tag_type === 'topic_area') {
+      return (`
+      <span><em>${tag.title}</em></span>
+    `)
+    }
+  }).join('')
+
   return (`
     <div class="card" data-sortdate="${Date.parse(this.date)}">
       <a href="/reports/${this.id}">
@@ -245,6 +262,7 @@ Report.prototype.reportCardHtml = function reportCardHtml() {
       <div class="card__content-type">PUBLICATION</div>
       <div class="card__title">
         <a class="card__link" href="/reports/${this.id}">${this.title}</a>
+        <div class="card__tags">tags: ${tags}</div>
       </div>
     </div>
   `)
@@ -306,6 +324,14 @@ class Event {
 }
 
 Event.prototype.eventCardHtml = function eventCardHtml() {
+  const tags = this.tags.map(tag => {
+    if (tag.tag_type === 'topic_area') {
+      return (`
+      <span><em>${tag.title}</em></span>
+    `)
+    }
+  }).join('')
+
   return (`
     <div class="card" data-sortdate="${Date.parse(this.start)}">
       <a href="/events/${this.id}">
@@ -314,6 +340,7 @@ Event.prototype.eventCardHtml = function eventCardHtml() {
       <div class="card__content-type">EVENT</div>
       <div class="card__title">
         <a class="card__link" href="/events/${this.id}">${this.title}</a>
+        <div class="card__tags">tags: ${tags}</div>
       </div>
     </div>
   `)
@@ -333,6 +360,14 @@ class Announcement {
 }
 
 Announcement.prototype.announcementCardHtml = function announcementCardHtml() {
+  const tags = this.tags.map(tag => {
+    if (tag.tag_type === 'topic_area') {
+      return (`
+      <span><em>${tag.title}</em></span>
+    `)
+    }
+  }).join('')
+
   return (`
     <div class="card" data-sortdate="${Date.parse(this.published_date)}">
       <a href="/announcements/${this.id}">
@@ -341,6 +376,7 @@ Announcement.prototype.announcementCardHtml = function announcementCardHtml() {
       <div class="card__content-type">NEWS</div>
       <div class="card__title">
         <a class="card__link" href="/announcements/${this.id}">${this.title}</a>
+        <div class="card__tags">tags: ${tags}</div>
       </div>
     </div>
   `)
