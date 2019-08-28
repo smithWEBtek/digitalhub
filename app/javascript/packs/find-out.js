@@ -125,25 +125,23 @@ const fetchTaggings = (dropdownsObject) => {
       resultsDiv.empty()
       resultsDiv.removeClass('results--cards-high')
       headerDiv.removeClass('find-out__header--large')
+      // fixedFooter()
+      headerLargeCardsHigh()
+      floatingFooter()
     }
 
     resetDisplay()
     loadTopicAreaNarrative(dropdownsObject.topic_area, response.topic_area_narrative)
 
-    if (response.taggings.length === 0) {
+    if (dropdownsObject.topic_area === 'all topic areas' && dropdownsObject.content_type !== 'events') {
+      headerShortCardsLow()
+    } else if (response.taggings.length === 0) {
       headerShortCardsLow()
       fixedFooter()
-    } else if (dropdownsObject.topic_area !== 'all topic areas' || dropdownsObject.content_type === 'events') {
-      headerLargeCardsHigh()
+    } else if (dropdownsObject.content_type === 'events') {
       nextThreeEvents()
-      floatingFooter()
-    } else if (dropdownsObject.content_type !== 'events' && dropdownsObject.topic_area !== 'all topic areas') {
-      headerLargeCardsHigh()
-      floatingFooter()
     } else if (dropdownsObject.content_type === 'events' && response.taggings.length > 0) {
-      headerLargeCardsHigh()
       nextThreeEvents()
-      floatingFooter()
     }
 
     loadInitialCards(response.taggings, resultsDiv, dropdownsObject)
