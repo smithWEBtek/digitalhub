@@ -86,7 +86,7 @@ const fetchTaggings = (dropdownsObject) => {
     const resultsDiv = $('.results')
     const headerDiv = $('.find-out__header')
 
-    const headerShortCardsLow = () => {
+    const headerSmallCardsLow = () => {
       headerDiv.removeClass('find-out__header--large')
       resultsDiv.removeClass('results--cards-high')
     }
@@ -103,18 +103,14 @@ const fetchTaggings = (dropdownsObject) => {
     }
 
     const fixedFooter = () => {
-      $('.results').css({
-        bottom: 0,
-        'margin-bottom': 0
-      })
-      $('.footer').css({
+      $('footer.footer').css({
         position: 'fixed',
         bottom: 0
       })
     }
 
     const floatingFooter = () => {
-      $('.footer').css({
+      $('footer.footer').css({
         position: '',
         bottom: ''
       })
@@ -125,7 +121,6 @@ const fetchTaggings = (dropdownsObject) => {
       resultsDiv.empty()
       resultsDiv.removeClass('results--cards-high')
       headerDiv.removeClass('find-out__header--large')
-      // fixedFooter()
       headerLargeCardsHigh()
       floatingFooter()
     }
@@ -134,12 +129,10 @@ const fetchTaggings = (dropdownsObject) => {
     loadTopicAreaNarrative(dropdownsObject.topic_area, response.topic_area_narrative)
 
     if (dropdownsObject.topic_area === 'all topic areas' && dropdownsObject.content_type !== 'events') {
-      headerShortCardsLow()
+      headerSmallCardsLow()
     } else if (response.taggings.length === 0) {
-      headerShortCardsLow()
+      headerSmallCardsLow()
       fixedFooter()
-    } else if (dropdownsObject.content_type === 'events') {
-      nextThreeEvents()
     } else if (dropdownsObject.content_type === 'events' && response.taggings.length > 0) {
       nextThreeEvents()
     }
