@@ -35,7 +35,7 @@
     min-height: 29rem;
     padding-top: 11.35rem;
 
-    &--with-topic {
+    &--large {
       @include media(small) { margin-bottom: 5rem; }
       @include media(x-small) { margin-bottom: 2rem; }
       margin-bottom: 9rem;
