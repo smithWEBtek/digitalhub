@@ -119,13 +119,14 @@ const fetchTaggings = (dropdownsObject) => {
     if (dropdownsObject.content_type !== 'events') {
       cardsLow()
       headerShort()
-    }
-    else if (dropdownsObject.content_type === 'events' && response.taggings.length > 0) {
+    } else if (dropdownsObject.content_type !== 'events' && dropdownsObject.topic_area !== 'all topic areas') {
+      headerTall()
+      cardsHigh()
+    } else if (dropdownsObject.content_type === 'events' && response.taggings.length > 0) {
       headerTall()
       nextThreeEvents()
       cardsHigh()
-    }
-    else if (response.taggings.length === 0) {
+    } else if (response.taggings.length === 0) {
       cardsLow()
       headerShort()
     }
@@ -157,16 +158,16 @@ const loadInitialCards = (taggings, resultsDiv, dropdownsObject) => {
     $('.results').html('<div class="message--none">There are currently no results for the selected filters.</div>')
     hideLoadMoreButton()
   } else {
-    if (dropdownsObject.content_type === 'events'){
-      createCards(taggings.slice(0,8), resultsDiv)
-      if (taggings.length > 8){
+    if (dropdownsObject.content_type === 'events') {
+      createCards(taggings.slice(0, 8), resultsDiv)
+      if (taggings.length > 8) {
         showLoadMoreButton(taggings.slice(8, taggings.length - 1), resultsDiv)
       }
       else {
         hideLoadMoreButton()
       }
     }
-    else{
+    else {
       createCards(taggings.slice(0, 9), resultsDiv)
       if (taggings.length > 9) {
         showLoadMoreButton(taggings.slice(9, taggings.length - 1), resultsDiv)
